@@ -10,15 +10,15 @@ def train_one_epoch(model,
     model.to(device)
 
     loss_train = 0
-    for _, (nums, sins) in enumerate(train_dl):
+    for _, (images, labels) in enumerate(train_dl):
 
         optimizer.zero_grad()
 
-        nums = nums.to(device)
-        sins = sins.to(device)
+        images = images.to(device)
+        labels = labels.to(device)
 
-        outputs = model(nums)
-        loss = loss_fn(outputs, sins)
+        outputs = model(images)
+        loss = loss_fn(outputs, labels)
 
         loss_train += loss.item()
 
@@ -30,31 +30,31 @@ def train_one_epoch(model,
 
 
 def test_one_epoch(model,
-                    test_dl,
+                    val_dl,
                     loss_fn,
                     device):
     model.eval()
     model.to(device)
-    loss_val = 0
 
+    loss_val = 0
     with torch.inference_mode():
 
-        for _, (nums, sins) in enumerate(test_dl):
+        for _, (images, labels) in enumerate(val_dl):
 
-            nums = nums.to(device)
-            sins = sins.to(device)
+            images = images.to(device)
+            labels = labels.to(device)
 
-            outputs = model(nums)
-            loss = loss_fn(outputs, sins)
+            outputs = model(images)
+            loss = loss_fn(outputs, labels)
 
             loss_val += loss.item()
 
-    return loss_val/len(test_dl)
+    return loss_val/len(val_dl)
 
 
 def train(model,
           train_dl,
-          test_dl,
+          val_dl,
           loss_fn,
           optimizer,
           device,
@@ -62,7 +62,7 @@ def train(model,
 
     results = {
         'train_loss':[],
-        'test_loss':[]
+        'val_loss':[]
     }
 
     for _ in range(epochs):
@@ -73,12 +73,12 @@ def train(model,
                                      optimizer=optimizer,
                                      device=device)
 
-        test_loss = test_one_epoch(model=model,
-                                   test_dl=test_dl,
+        val_loss = test_one_epoch(model=model,
+                                   val_dl=val_dl,
                                    loss_fn=loss_fn,
                                    device=device)
 
         results['train_loss'].append(train_loss)
-        results['test_loss'].append(test_loss)
+        results['val_loss'].append(val_loss)
 
     return results
