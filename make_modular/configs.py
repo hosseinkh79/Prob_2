@@ -7,4 +7,4 @@ TRAIN_DATASET_PATH = os.path.join(DATASET_PATH, "train/")
 TEST_DATASET_PATH = os.path.join(DATASET_PATH, "test/") 
 
 # batchsize
-batch_size = 32
+batch_size = 64
