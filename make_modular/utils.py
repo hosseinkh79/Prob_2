@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 import torch
+from torch import nn
 
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
@@ -129,3 +130,30 @@ def plot_loss_curves(results):
     plt.legend(loc='best')
 
 
+
+
+# find best lr for each model
+from make_modular.configs import device
+from make_modular.engine import train
+
+def find_best_lr(n_iter, model):
+    '''n_iter: number of iteratins we want to find best lr .
+    '''
+    loss_fn = nn.CrossEntropyLoss()
+    final_res_lr = []
+    for _ in range(n_iter):
+
+        lr = 10 ** (np.random.uniform(low=-6, high=-1))
+        optimizer = torch.optim.Adam(params=model.parameters(), lr=lr)
+        # print(f'lr : {lr}')
+
+        results = train(model=model,
+                    train_dl=train_dl,
+                    test_dl=val_dl,
+                    loss_fn=loss_fn,
+                    optimizer=optimizer,
+                    device=device,
+                    epochs=7)
+        final_res_lr.append({lr:results})
+
+    return final_res_lr
