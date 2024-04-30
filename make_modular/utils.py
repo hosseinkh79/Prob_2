@@ -1,7 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+
 import torch
 
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
 
 # show some images from dataset with dataLoader
@@ -80,6 +82,50 @@ def calculate_f1Score_recall_precision(preds, labels, num_classes):
 
 
 # create confusion matrix with model predicted and labels
+def plot_confusion_matrix(y_true :np.array, y_pred: np.array, labels: np.array):
+    '''
+    y_true : real labels
+    y_pred : models prediction
+    labels : all possible labels exp --> [0, 1, ... 9]
 
+    '''
+    cm = confusion_matrix(y_true=y_true, y_pred=y_pred, labels=labels)
+    dis = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    dis.plot()
+
+
+
+# plot loss-acc-f1score curves
+def plot_loss_curves(results):
+    # Define the figure size (width, height)
+    plt.figure(figsize=(15, 3))
+
+    # loss curves
+    plt.subplot(1, 3, 1)
+    epochs = range(len(results['train_loss']))
+    plt.plot(epochs, results['train_loss'], label='train_loss')
+    plt.plot(epochs, results['val_loss'], label='val_loss')
+    plt.title('Loss Curves')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend(loc='best')
+
+    # acc curves
+    plt.subplot(1, 3, 2)
+    plt.plot(epochs, results['train_acc'], label='train_acc')
+    plt.plot(epochs, results['val_acc'], label='val_acc')
+    plt.title('Accuracy Curves')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend(loc='best')
+
+    # f1_score curves
+    plt.subplot(1, 3, 3)
+    plt.plot(epochs, results['train_f1_score'], label='train_f1_score')
+    plt.plot(epochs, results['val_f1_score'], label='val_f1_score')
+    plt.title('F1_score Curves')
+    plt.xlabel('Epochs')
+    plt.ylabel('F1_score')
+    plt.legend(loc='best')
 
 

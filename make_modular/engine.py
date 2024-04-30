@@ -143,7 +143,7 @@ def train(model,
               )
 
         results['train_loss'].append(train_loss)
-        results['val_loss'].append(val_loss)
+        results['val_loss'].append(val_loss)    
         results['train_acc'].append(train_acc)
         results['val_acc'].append(val_acc)
         results['train_f1_score'].append(train_f1_score)
