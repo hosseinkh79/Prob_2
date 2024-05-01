@@ -35,8 +35,8 @@ def train_one_epoch(model,
         train_acc += acc.item()
 
         # calculate f1_score, recall, precision
-        labels = labels.detach().numpy()
-        indices = indices.detach().numpy()
+        labels = labels.cpu().detach().numpy()
+        indices = indices.cpu().detach().numpy()
         f1_score, recall, precision = calculate_f1Score_recall_precision(preds=indices, 
                                                                          labels=labels, 
                                                                          num_classes=num_classes)
@@ -85,8 +85,8 @@ def test_one_epoch(model,
             val_acc += acc.item()
 
             # calculate f1_score, recall, precision
-            labels = labels.detach().numpy()
-            indices = indices.detach().numpy()
+            labels = labels.cpu().detach().numpy()
+            indices = indices.cpu().detach().numpy()
             f1_score, recall, precision = calculate_f1Score_recall_precision(preds=indices, 
                                                                              labels=labels, 
                                                                              num_classes=num_classes)

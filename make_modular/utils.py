@@ -157,3 +157,9 @@ def find_best_lr(n_iter, model):
         final_res_lr.append({lr:results})
 
     return final_res_lr
+
+# the train time 
+def print_train_time(start, end):
+    total_time = end - start
+    print(f"\nTrain time: {total_time/60:.3f} minutes")
+    return total_time
