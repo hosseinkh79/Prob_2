@@ -131,32 +131,37 @@ def plot_loss_curves(results):
 
 
 
-
 # find best lr for each model
-from make_modular.configs import device
 from make_modular.engine import train
+from make_modular.configs import device
 
-def find_best_lr(n_iter, model):
+def find_best_lr(model_class, n_iter, train_dl, val_dl):
     '''n_iter: number of iteratins we want to find best lr .
     '''
     loss_fn = nn.CrossEntropyLoss()
     final_res_lr = []
     for _ in range(n_iter):
 
+        model = model_class()
         lr = 10 ** (np.random.uniform(low=-6, high=-1))
         optimizer = torch.optim.Adam(params=model.parameters(), lr=lr)
-        # print(f'lr : {lr}')
+        print(f'lr : {lr}')
+        # Zero out the gradients
+        # optimizer.zero_grad()
 
         results = train(model=model,
                     train_dl=train_dl,
-                    test_dl=val_dl,
+                    val_dl=val_dl,
                     loss_fn=loss_fn,
                     optimizer=optimizer,
                     device=device,
-                    epochs=7)
+                    epochs=1)
         final_res_lr.append({lr:results})
+        print('---' * 40)
 
     return final_res_lr
+
+
 
 # the train time 
 def print_train_time(start, end):

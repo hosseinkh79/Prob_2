@@ -17,9 +17,6 @@ def train_one_epoch(model,
 
     for i, (images, labels) in enumerate(train_dl):
 
-        # if i == 2:
-        #     break
-
         optimizer.zero_grad()
 
         images = images.to(device)
@@ -43,8 +40,10 @@ def train_one_epoch(model,
         train_f1_score += f1_score
         train_recall += recall
         train_precision += precision
-        
 
+        # if i % 30 == 0 :
+        #     print(f'loss in {i} {loss.item()}')
+            
         train_loss += loss.item()
 
         loss.backward()
@@ -121,7 +120,7 @@ def train(model,
         'val_f1_score':[]
     }
 
-    for _ in range(epochs):
+    for i in range(epochs):
 
         train_loss, train_acc, train_f1_score = train_one_epoch(model=model,
                                      train_dl=train_dl,
@@ -134,10 +133,11 @@ def train(model,
                                    loss_fn=loss_fn,
                                    device=device)
         
-        print(f'train_loss:{train_loss:.2f} | '
+        print(f'epoch {i+1}/{epochs} | '
+              f'train_loss:{train_loss:.2f} | '
               f'val_loss:{val_loss:.2f} | '
-              f'train_acc:{train_acc:.3f} | '
-              f'val_acc:{val_acc:.3f} | '
+              # f'train_acc:{train_acc:.3f} | '
+              # f'val_acc:{val_acc:.3f} | '
               f'train_f1_score:{train_f1_score:.3f} | '
               f'val_f1_score:{val_f1_score:.3f}'
               )
