@@ -136,10 +136,10 @@ def train(model,
         
         print(f'train_loss:{train_loss:.2f} | '
               f'val_loss:{val_loss:.2f} | '
-              f'train_acc:{train_acc:.2f} | '
-              f'val_acc:{val_acc:.2f} | '
-              f'train_f1_score:{train_f1_score:.2f} | '
-              f'val_f1_score:{val_f1_score:.2f}'
+              f'train_acc:{train_acc:.3f} | '
+              f'val_acc:{val_acc:.3f} | '
+              f'train_f1_score:{train_f1_score:.3f} | '
+              f'val_f1_score:{val_f1_score:.3f}'
               )
 
         results['train_loss'].append(train_loss)
