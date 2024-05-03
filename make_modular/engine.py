@@ -102,6 +102,8 @@ def test_one_epoch(model,
 
     return val_loss, val_acc, val_f1_score
 
+# import wandb
+import wandb
 
 def train(model,
           train_dl,
@@ -109,7 +111,22 @@ def train(model,
           loss_fn,
           optimizer,
           device,
-          epochs):
+          epochs,
+          save_wandb=True,
+          num_exp=None,
+          hyper_param_config=None):
+    
+# ------------------------------------------------------------------------------------------------
+    if save_wandb : 
+        wandb.init(
+        # Set the project where this run will be logged
+        project="Basic-MNIST", 
+        # We pass a run name (otherwise it’ll be randomly assigned, like sunshine-lollypop-10)
+        name=f"experiment_{num_exp}", 
+        # Track hyperparameters and run metadata
+        config=hyper_param_config
+        )
+# --------------------------------------------------------------------------------
 
     results = {
         'train_loss':[],
@@ -132,7 +149,18 @@ def train(model,
                                    val_dl=val_dl,
                                    loss_fn=loss_fn,
                                    device=device)
-        
+# --------------------------------------------------------------------------------
+        if save_wandb : 
+            wandb.log({"train_loss": train_loss, 
+                    "val_loss": val_loss,
+                    "train_acc": train_acc,
+                    "val_acc": val_acc,
+                    "train_f1_score": train_f1_score,
+                    "val_f1_score": val_f1_score,
+                    })
+            
+# --------------------------------------------------------------------------------
+
         print(f'epoch {i+1}/{epochs} | '
               f'train_loss:{train_loss:.2f} | '
               f'val_loss:{val_loss:.2f} | '
@@ -141,12 +169,17 @@ def train(model,
               f'train_f1_score:{train_f1_score:.3f} | '
               f'val_f1_score:{val_f1_score:.3f}'
               )
-
+    
         results['train_loss'].append(train_loss)
         results['val_loss'].append(val_loss)    
         results['train_acc'].append(train_acc)
         results['val_acc'].append(val_acc)
         results['train_f1_score'].append(train_f1_score)
         results['val_f1_score'].append(val_f1_score)
+
+# --------------------------------------------------------------------------------
+    if save_wandb : 
+        wandb.finish()
+# --------------------------------------------------------------------------------
 
     return results

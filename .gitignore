@@ -4,6 +4,7 @@
 #my files
 mnist_dataset/
 models/
+wandb/
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
