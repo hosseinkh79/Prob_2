@@ -128,6 +128,7 @@ def plot_loss_curves(results, figsize=(12, 3)):
 
     # Adjust spacing between subplots
     plt.subplots_adjust(wspace=0.3)
+    plt.show()
 
 
 
@@ -135,18 +136,32 @@ def plot_loss_curves(results, figsize=(12, 3)):
 from make_modular.engine import train
 from make_modular.configs import device
 
-def find_best_lr(model_class, n_iter, epochs_per_lr, lr_low, lr_high, train_dl, val_dl):
+def find_best_lr(model_class, n_iter, epochs_per_lr, lr_low, lr_high, train_dl, val_dl, specific_lrs=False, coefficient_for_lr=1.):
     ''' n_iter: number of iteratins we want to find best lr with different lrs.
         epochs_per_lr: number of epochs for one lr .
-        interval for lr : (lr_low, lr_high) 
+        interval for lr : (lr_low, lr_high) -->should be integers between (-10, 1)
     number of totall runs(epochs) is : n_iter * epochs_per_lr
+
+        specific_lrs : if True it means we want to use specific range of lrs exp: [.001, .01, .1] 
+        but is False we want to use random search between 10 ** (low, high)
+
+        coefficient_for_lr : sometimes we need numbers between real numbers exp = 4.5e-6 or 3.2e-5
     '''
+
+    if specific_lrs:
+        lrs = coefficient_for_lr * 10 ** (np.linspace(lr_low, lr_high, n_iter)) # specific lrs
+
+    else:
+        lrs = coefficient_for_lr * 10 ** (np.random.uniform(low=lr_low, high=lr_high, size=n_iter)) # random lrs
+
+
     loss_fn = nn.CrossEntropyLoss()
     final_res_lr = []
-    for _ in range(n_iter):
+
+    for i in range(n_iter):
 
         model = model_class()
-        lr = 10 ** (np.random.uniform(low=lr_low, high=lr_high))
+        lr = lrs[i]
         optimizer = torch.optim.Adam(params=model.parameters(), lr=lr)
         print(f'lr : {lr}')
 
@@ -158,6 +173,9 @@ def find_best_lr(model_class, n_iter, epochs_per_lr, lr_low, lr_high, train_dl, 
                         device=device,
                         epochs=epochs_per_lr)
         final_res_lr.append({lr:results})
+
+        plot_loss_curves(results=results, figsize=(15, 3)) # plot results
+
         print('---' * 40)
 
     return final_res_lr
