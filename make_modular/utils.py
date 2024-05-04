@@ -97,37 +97,37 @@ def plot_confusion_matrix(y_true :np.array, y_pred: np.array, labels: np.array):
 
 
 # plot loss-acc-f1score curves
-def plot_loss_curves(results):
+def plot_loss_curves(results, figsize=(12, 3)):
     # Define the figure size (width, height)
-    plt.figure(figsize=(15, 3))
+    fig, axes = plt.subplots(1, 3, figsize=figsize)
 
     # loss curves
-    plt.subplot(1, 3, 1)
     epochs = range(len(results['train_loss']))
-    plt.plot(epochs, results['train_loss'], label='train_loss')
-    plt.plot(epochs, results['val_loss'], label='val_loss')
-    plt.title('Loss Curves')
-    plt.xlabel('Epochs')
-    plt.ylabel('Loss')
-    plt.legend(loc='best')
+    axes[0].plot(epochs, results['train_loss'], label='train_loss')
+    axes[0].plot(epochs, results['val_loss'], label='val_loss')
+    axes[0].set_title('Loss')
+    axes[0].set_xlabel('Epochs')
+    axes[0].set_ylabel('Loss')
+    axes[0].legend(loc='best')
 
     # acc curves
-    plt.subplot(1, 3, 2)
-    plt.plot(epochs, results['train_acc'], label='train_acc')
-    plt.plot(epochs, results['val_acc'], label='val_acc')
-    plt.title('Accuracy Curves')
-    plt.xlabel('Epochs')
-    plt.ylabel('Accuracy')
-    plt.legend(loc='best')
+    axes[1].plot(epochs, results['train_acc'], label='train_acc')
+    axes[1].plot(epochs, results['val_acc'], label='val_acc')
+    axes[1].set_title('Accuracy')
+    axes[1].set_xlabel('Epochs')
+    axes[1].set_ylabel('Accuracy')
+    axes[1].legend(loc='best')
 
     # f1_score curves
-    plt.subplot(1, 3, 3)
-    plt.plot(epochs, results['train_f1_score'], label='train_f1_score')
-    plt.plot(epochs, results['val_f1_score'], label='val_f1_score')
-    plt.title('F1_score Curves')
-    plt.xlabel('Epochs')
-    plt.ylabel('F1_score')
-    plt.legend(loc='best')
+    axes[2].plot(epochs, results['train_f1_score'], label='train_f1_score')
+    axes[2].plot(epochs, results['val_f1_score'], label='val_f1_score')
+    axes[2].set_title(f'F1_score')
+    axes[2].set_xlabel('Epochs')
+    axes[2].set_ylabel('F1_score')
+    axes[2].legend(loc='best')
+
+    # Adjust spacing between subplots
+    plt.subplots_adjust(wspace=0.3)
 
 
 
@@ -135,27 +135,28 @@ def plot_loss_curves(results):
 from make_modular.engine import train
 from make_modular.configs import device
 
-def find_best_lr(model_class, n_iter, train_dl, val_dl):
-    '''n_iter: number of iteratins we want to find best lr .
+def find_best_lr(model_class, n_iter, epochs_per_lr, lr_low, lr_high, train_dl, val_dl):
+    ''' n_iter: number of iteratins we want to find best lr with different lrs.
+        epochs_per_lr: number of epochs for one lr .
+        interval for lr : (lr_low, lr_high) 
+    number of totall runs(epochs) is : n_iter * epochs_per_lr
     '''
     loss_fn = nn.CrossEntropyLoss()
     final_res_lr = []
     for _ in range(n_iter):
 
         model = model_class()
-        lr = 10 ** (np.random.uniform(low=-6, high=-1))
+        lr = 10 ** (np.random.uniform(low=lr_low, high=lr_high))
         optimizer = torch.optim.Adam(params=model.parameters(), lr=lr)
         print(f'lr : {lr}')
-        # Zero out the gradients
-        # optimizer.zero_grad()
 
         results = train(model=model,
-                    train_dl=train_dl,
-                    val_dl=val_dl,
-                    loss_fn=loss_fn,
-                    optimizer=optimizer,
-                    device=device,
-                    epochs=1)
+                        train_dl=train_dl,
+                        val_dl=val_dl,
+                        loss_fn=loss_fn,
+                        optimizer=optimizer,
+                        device=device,
+                        epochs=epochs_per_lr)
         final_res_lr.append({lr:results})
         print('---' * 40)
 

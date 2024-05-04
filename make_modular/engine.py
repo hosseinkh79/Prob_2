@@ -32,8 +32,8 @@ def train_one_epoch(model,
         train_acc += acc.item()
 
         # calculate f1_score, recall, precision
-        labels = labels.cpu().detach().numpy()
-        indices = indices.cpu().detach().numpy()
+        labels = labels.detach().cpu().numpy()
+        indices = indices.detach().cpu().numpy()
         f1_score, recall, precision = calculate_f1Score_recall_precision(preds=indices, 
                                                                          labels=labels, 
                                                                          num_classes=num_classes)
@@ -84,8 +84,8 @@ def test_one_epoch(model,
             val_acc += acc.item()
 
             # calculate f1_score, recall, precision
-            labels = labels.cpu().detach().numpy()
-            indices = indices.cpu().detach().numpy()
+            labels = labels.detach().cpu().numpy()
+            indices = indices.detach().cpu().numpy()
             f1_score, recall, precision = calculate_f1Score_recall_precision(preds=indices, 
                                                                              labels=labels, 
                                                                              num_classes=num_classes)
@@ -112,17 +112,18 @@ def train(model,
           optimizer,
           device,
           epochs,
-          save_wandb=True,
-          num_exp=None,
+          save_wandb=None,
+          project_name=None,
+          experiment_name=None,
           hyper_param_config=None):
     
 # ------------------------------------------------------------------------------------------------
     if save_wandb : 
         wandb.init(
         # Set the project where this run will be logged
-        project="Basic-MNIST", 
+        project=project_name, 
         # We pass a run name (otherwise it’ll be randomly assigned, like sunshine-lollypop-10)
-        name=f"experiment_{num_exp}", 
+        name=f"exp_{experiment_name}", 
         # Track hyperparameters and run metadata
         config=hyper_param_config
         )
@@ -152,12 +153,12 @@ def train(model,
 # --------------------------------------------------------------------------------
         if save_wandb : 
             wandb.log({"train_loss": train_loss, 
-                    "val_loss": val_loss,
-                    "train_acc": train_acc,
-                    "val_acc": val_acc,
-                    "train_f1_score": train_f1_score,
-                    "val_f1_score": val_f1_score,
-                    })
+                        "val_loss": val_loss,
+                        "train_acc": train_acc,
+                        "val_acc": val_acc,
+                        "train_f1_score": train_f1_score,
+                        "val_f1_score": val_f1_score,
+                        })
             
 # --------------------------------------------------------------------------------
 
@@ -178,7 +179,7 @@ def train(model,
         results['val_f1_score'].append(val_f1_score)
 
 # --------------------------------------------------------------------------------
-    if save_wandb : 
+    if save_wandb :
         wandb.finish()
 # --------------------------------------------------------------------------------
 

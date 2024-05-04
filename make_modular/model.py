@@ -2,7 +2,7 @@ from torch import nn
 
 # model_1
 class MNIST_MODEL_1(nn.Module):
-    def __init__(self, in_channel=1, num_classes=10) -> None:
+    def __init__(self, dropout_rate=.5, in_channel=1, num_classes=10) -> None:
         super().__init__()
 
         self.cnn = nn.Sequential(
@@ -12,7 +12,7 @@ class MNIST_MODEL_1(nn.Module):
             nn.Conv2d(in_channels=32, out_channels=64, kernel_size=3), # (b, 32, 26, 26) --> (b, 64, 24, 24)
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2), # (b, 64, 24, 24) --> (b, 64, 12, 12)
-            nn.Dropout(.6),
+            nn.Dropout(dropout_rate),
             nn.Flatten() # (b, 64, 12, 12) --> (b, 64*12*12)
         )
 
