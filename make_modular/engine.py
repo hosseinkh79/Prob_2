@@ -165,8 +165,8 @@ def train(model,
         print(f'epoch {i+1}/{epochs} | '
               f'train_loss:{train_loss:.2f} | '
               f'val_loss:{val_loss:.2f} | '
-              # f'train_acc:{train_acc:.3f} | '
-              # f'val_acc:{val_acc:.3f} | '
+            #   f'train_acc:{train_acc:.3f} | '
+            #   f'val_acc:{val_acc:.3f} | '
               f'train_f1_score:{train_f1_score:.3f} | '
               f'val_f1_score:{val_f1_score:.3f}'
               )

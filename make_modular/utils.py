@@ -136,23 +136,24 @@ def plot_loss_curves(results, figsize=(12, 3)):
 from make_modular.engine import train
 from make_modular.configs import device
 
-def find_best_lr(model_class, n_iter, epochs_per_lr, lr_low, lr_high, train_dl, val_dl, specific_lrs=False, coefficient_for_lr=1.):
-    ''' n_iter: number of iteratins we want to find best lr with different lrs.
+def find_best_lr(model_class, epochs_per_lr, train_dl, val_dl, lr_list=None, n_iter=None, lr_low=None, lr_high=None):
+    ''' n_iter: number of iteratins we want to find best lr with different lrs
+        n_iter = len(lr_list) if lr_list is not None else recognize by user.
         epochs_per_lr: number of epochs for one lr .
-        interval for lr : (lr_low, lr_high) -->should be integers between (-10, 1)
-    number of totall runs(epochs) is : n_iter * epochs_per_lr
+        (lr_low, lr_high) low and high for lr :should be integers between (-10, 1)
+        number of totall runs(epochs) is : n_iter * epochs_per_lr
 
-        specific_lrs : if True it means we want to use specific range of lrs exp: [.001, .01, .1] 
-        but is False we want to use random search between 10 ** (low, high)
-
-        coefficient_for_lr : sometimes we need numbers between real numbers exp = 4.5e-6 or 3.2e-5
+        lr_list : should be list of lrs [.00003, .0005, ....] 
+        
+        If we want to set lrs randomly just initialize low and high and n_iners otherwise just initialize lir_list
     '''
 
-    if specific_lrs:
-        lrs = coefficient_for_lr * 10 ** (np.linspace(lr_low, lr_high, n_iter)) # specific lrs
+    if lr_list is not None:
+        lrs = lr_list # specific lrs
+        n_iter = len(lr_list)
 
     else:
-        lrs = coefficient_for_lr * 10 ** (np.random.uniform(low=lr_low, high=lr_high, size=n_iter)) # random lrs
+        lrs = 10 ** (np.random.uniform(low=lr_low, high=lr_high, size=n_iter)) # random lrs
 
 
     loss_fn = nn.CrossEntropyLoss()
@@ -162,8 +163,10 @@ def find_best_lr(model_class, n_iter, epochs_per_lr, lr_low, lr_high, train_dl, 
 
         model = model_class()
         lr = lrs[i]
-        optimizer = torch.optim.Adam(params=model.parameters(), lr=lr)
-        print(f'lr : {lr}')
+        optimizer = torch.optim.SGD(params=model.parameters(), lr=lr)
+
+        print(f'Iteration {i+1}:{n_iter}')
+        print(f'Lr  :  {lr}')
 
         results = train(model=model,
                         train_dl=train_dl,
